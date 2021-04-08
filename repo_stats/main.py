@@ -4,7 +4,7 @@ from collections import defaultdict
 from dotenv import load_dotenv
 from fastapi import FastAPI
 
-from repo_stats.fecher.commit import fetch_pr_commits
+from repo_stats.fecher.pr_commit import fetch_pr_commits
 from repo_stats.fecher.graphql_client import graphql_connection
 
 load_dotenv()
