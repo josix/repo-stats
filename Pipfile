@@ -18,9 +18,10 @@ toml = "*"
 pylint = "*"
 
 [packages]
-httpx = "*"
 fastapi = "*"
 uvicorn = "*"
+python-dotenv = "*"
+gql = {extras = ["aiohttp"], version = "*"}
 
 [requires]
 python_version = "3.8"
@@ -29,3 +30,6 @@ python_version = "3.8"
 dev = "uvicorn repo_stats.main:app --reload"
 lint = "inv lint"
 reformat = "inv reformat"
+
+[pipenv]
+allow_prereleases = true
