@@ -1,1 +1,1 @@
-web: uvicorn iou.main:app --host=0.0.0.0 --port=${PORT:-8000}
+web: uvicorn repo_stats.main:app --host=0.0.0.0 --port=${PORT:-8000}
