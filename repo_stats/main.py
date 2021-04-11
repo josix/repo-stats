@@ -26,9 +26,7 @@ app = FastAPI()
         500: {"model": Message},
     },
 )
-async def get_pull_request_stats(
-    repo_owner: str, repo_name: str, last: int = 100
-):
+async def get_pull_request_stats(repo_owner: str, repo_name: str, last: int = 100):
     response: GraphAPIResponse = GraphAPIResponse(
         result=dict(),
     )
@@ -69,7 +67,7 @@ async def get_pull_request_stats(
     elif response.status == "NOT_FOUND":
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
-            content={"message": f"Repository {repo_owner}/{repo_name} not found"},
+            content={"message": "Resource not found"},
         )
     elif response.status == "UNAVAILABLE":
         return JSONResponse(
