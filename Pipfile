@@ -21,7 +21,8 @@ pylint = "*"
 fastapi = "*"
 uvicorn = "*"
 python-dotenv = "*"
-gql = {extras = ["aiohttp"], version = "*"}
+gql = "==3.0.0a5"
+aiohttp = "*"
 
 [requires]
 python_version = "3.8"

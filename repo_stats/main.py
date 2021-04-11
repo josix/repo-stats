@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 
 from repo_stats.fecher.common import GraphAPIResponse
 from repo_stats.fecher.graphql_client import graphql_connection
-from repo_stats.fecher.pr_commit import fetch_pr_commits
+from repo_stats.fecher.pr import fetch_pr_commits
 from repo_stats.model import Message, PullRequestStats
 from repo_stats.stats import PRStatsCounter
 
