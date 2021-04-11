@@ -1,6 +1,4 @@
 import asyncio
-import io
-from collections import defaultdict
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, status
@@ -8,7 +6,7 @@ from fastapi.responses import JSONResponse
 
 from repo_stats.fecher.common import GraphAPIResponse
 from repo_stats.fecher.graphql_client import graphql_connection
-from repo_stats.fecher.pr import fetch_pr_commits
+from repo_stats.fecher.pr import fetch_pr_info
 from repo_stats.model import Message, PullRequestStats
 from repo_stats.stats import PRStatsCounter
 
@@ -31,8 +29,8 @@ async def get_pull_request_stats(repo_owner: str, repo_name: str, last: int = 10
         result=dict(),
     )
     async with graphql_connection() as session:
-        fetch_pr_commits_task = asyncio.create_task(
-            fetch_pr_commits(
+        fetch_pr_info_task = asyncio.create_task(
+            fetch_pr_info(
                 session,
                 response,
                 repo_owner=repo_owner,
@@ -40,7 +38,7 @@ async def get_pull_request_stats(repo_owner: str, repo_name: str, last: int = 10
                 limit=last,
             )
         )
-        await asyncio.gather(fetch_pr_commits_task)
+        await asyncio.gather(fetch_pr_info_task)
     if response.status == "SUCCESS":
         result = response.result
         pull_requests = result["repository"]["pullRequests"]["nodes"]

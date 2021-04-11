@@ -4,7 +4,7 @@ from gql.transport.exceptions import TransportQueryError
 from repo_stats.fecher.common import GraphAPIResponse
 
 
-async def fetch_pr_commits(
+async def fetch_pr_info(
     session, response: GraphAPIResponse, repo_owner: str, repo_name: str, limit=50
 ) -> None:
     query = gql(
