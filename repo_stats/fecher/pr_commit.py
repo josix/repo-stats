@@ -1,15 +1,21 @@
 from gql import gql
+from gql.transport.exceptions import TransportQueryError
+
+from repo_stats.fecher.common import GraphAPIResponse
 
 
 async def fetch_pr_commits(
-    session, response, repo_owner: str, repo_name: str, limit=50
+    session, response: GraphAPIResponse, repo_owner: str, repo_name: str, limit=50
 ) -> None:
     query = gql(
         """
-        query getPRCommits($name: String!, $owner: String!, $limit: Int) {
+        query getPRStats($name: String!, $owner: String!, $limit: Int) {
             repository(name: $name, owner: $owner) {
                 pullRequests(last: $limit) {
                 nodes {
+                    author {
+                    login
+                    }
                     commits(last: $limit) {
                     nodes {
                         commit {
@@ -21,10 +27,24 @@ async def fetch_pr_commits(
                         }
                     }
                     }
+                    comments(last: $limit) {
+                    nodes {
+                        author {
+                        login
+                        }
+                    }
+                    }
+                    reviews(last: $limit) {
+                    nodes {
+                        author {
+                        login
+                        }
+                    }
+                    }
                 }
                 }
             }
-        }
+            }
         """
     )
     params = {
@@ -32,5 +52,9 @@ async def fetch_pr_commits(
         "owner": repo_owner,
         "limit": limit,
     }
-    result = await session.execute(document=query, variable_values=params)
-    response["result"] = result
+    try:
+        result = await session.execute(document=query, variable_values=params)
+        response.update_status("SUCCESS")
+        response.result = result
+    except TransportQueryError:
+        response.update_status("NOT_FOUND")
