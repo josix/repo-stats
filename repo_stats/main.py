@@ -25,7 +25,7 @@ app = FastAPI()
     },
 )
 async def get_pull_request_stats(
-    repo_owner: str, repo_name: str, last: int = 100, csv=False
+    repo_owner: str, repo_name: str, last: int = 100, csv: bool = False
 ):
     response: GraphAPIResponse = GraphAPIResponse(
         result=dict(),
