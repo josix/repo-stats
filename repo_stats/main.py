@@ -2,7 +2,7 @@ import asyncio
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, status
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 
 from repo_stats.fecher.common import GraphAPIResponse
 from repo_stats.fecher.graphql_client import graphql_connection
@@ -24,7 +24,9 @@ app = FastAPI()
         500: {"model": Message},
     },
 )
-async def get_pull_request_stats(repo_owner: str, repo_name: str, last: int = 100):
+async def get_pull_request_stats(
+    repo_owner: str, repo_name: str, last: int = 100, csv=False
+):
     response: GraphAPIResponse = GraphAPIResponse(
         result=dict(),
     )
@@ -61,7 +63,14 @@ async def get_pull_request_stats(repo_owner: str, repo_name: str, last: int = 10
             for comment in comments:
                 login = comment["author"]["login"]
                 stats.update_comment(login)
-        return stats.json()
+        if csv:
+            return StreamingResponse(
+                stats.csv(),
+                media_type="text/csv",
+                headers={"Content-Disposition": "filename=pull_request_stats.csv"},
+            )
+        else:
+            return stats.json()
     elif response.status == "NOT_FOUND":
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,

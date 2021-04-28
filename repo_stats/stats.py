@@ -1,5 +1,7 @@
+import csv
 from collections import defaultdict
 from dataclasses import dataclass, field
+from io import StringIO
 from typing import Dict, List
 
 
@@ -50,18 +52,26 @@ class PRStatsCounter(StatsCounterBase):
             "review": [self.review[author] for author in self.author],
         }
 
-    def csv(self):
-        header = ",".join(["Author", "#Pull Request", "#Comment", "#Commit", "#Review"])
-        content = [
-            ",".join(
-                [
-                    author,
-                    str(self.pull_request[author]),
-                    str(self.comment[author]),
-                    str(self.commit[author]),
-                    str(self.review[author]),
-                ]
-            )
+    def csv(self, delimiter=","):
+        headers = ["Author", "#Pull Request", "#Comment", "#Commit", "#Review"]
+        new_csvfile = StringIO()
+        wr = csv.writer(new_csvfile, delimiter=delimiter, quoting=csv.QUOTE_NONNUMERIC)
+        wr.writerow(headers)
+        wr = csv.DictWriter(new_csvfile, fieldnames=headers)
+        data = [
+            {
+                "Author": author,
+                "#Pull Request": self.pull_request[author],
+                "#Comment": self.comment[author],
+                "#Commit": self.commit[author],
+                "#Review": self.review[author],
+            }
             for author in self.author
         ]
-        return "\n".join([header, *content])
+        wr.writerows(data)
+        new_csvfile.seek(0)
+        line = new_csvfile.readline()
+        while len(line) > 0:
+            yield line
+            line = new_csvfile.readline()
+        new_csvfile.close()
