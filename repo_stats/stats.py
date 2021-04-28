@@ -75,3 +75,41 @@ class PRStatsCounter(StatsCounterBase):
             yield line
             line = new_csvfile.readline()
         new_csvfile.close()
+
+
+@dataclass
+class IssueStatsCounter(StatsCounterBase):
+    issue: Dict[str, int] = field(default_factory=lambda: defaultdict(int))
+
+    def update_issue(self, login, count=1):
+        self.update_author(login)
+        self.issue[login] += count
+
+    def json(self):
+        return {
+            "author": self.author,
+            "issue": [self.issue[author] for author in self.author],
+            "comment": [self.comment[author] for author in self.author],
+        }
+
+    def csv(self, delimiter=","):
+        headers = ["Author", "#Issue", "#Comment"]
+        new_csvfile = StringIO()
+        wr = csv.writer(new_csvfile, delimiter=delimiter, quoting=csv.QUOTE_NONNUMERIC)
+        wr.writerow(headers)
+        wr = csv.DictWriter(new_csvfile, fieldnames=headers)
+        data = [
+            {
+                "Author": author,
+                "#Issue": self.issue[author],
+                "#Comment": self.comment[author],
+            }
+            for author in self.author
+        ]
+        wr.writerows(data)
+        new_csvfile.seek(0)
+        line = new_csvfile.readline()
+        while len(line) > 0:
+            yield line
+            line = new_csvfile.readline()
+        new_csvfile.close()

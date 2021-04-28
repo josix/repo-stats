@@ -12,3 +12,8 @@ class PullRequestStats(BaseModel):
 
 class Message(BaseModel):
     message: str
+
+class IssueStats(BaseModel):
+    author: List[str]
+    issue: List[str]
+    comment: List[str]
